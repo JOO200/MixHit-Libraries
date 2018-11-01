@@ -1,5 +1,8 @@
-# Hello World Example
+# MixHit-Libraries
 
-Starts a FreeRTOS task to print "Hello World"
+Dies sind die Abhängigkeiten des Projektes MixHit.
+Diese Abhängigkeiten werden vom Cocktailmixer, von der Bezahlstation, von der Abholstation und von der Füllstandsanzeige benutzt.
 
-See the README.md file in the upper level 'examples' directory for more information about examples.
+Zum Cocktailmixer: https://github.com/Mechatronikwelt/MixHit
+
+Work in Progress
