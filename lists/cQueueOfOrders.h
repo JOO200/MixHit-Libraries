@@ -1,9 +1,8 @@
 #ifndef _CWARTESCHLANGE_H_
 #define _CWARTESCHLANGE_H_
 
-#include "../obj/cCocktail.h"
-#include "../Configuration.h"
-#include "../obj/cOrder.h"
+#include "cCocktail.h"
+#include "cOrder.h"
 
 class cQueueOfOrders
 { // FiFo - First in, first out.

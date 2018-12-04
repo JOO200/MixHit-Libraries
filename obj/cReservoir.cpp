@@ -15,118 +15,75 @@ cReservoir::cReservoir()
 	}
 }
 */
-cReservoir::cReservoir(std::string pNames[], int pNumberOfReservoir)
+
+SingleReservoir::SingleReservoir(int pId, std::string pName, double pm, double pb, int pSumServed)
 {
-	mNumberOfReservoir = pNumberOfReservoir < MAX_NUMBER_RESERVOIR ? pNumberOfReservoir : MAX_NUMBER_RESERVOIR;
-	for (int i = 0; i<mNumberOfReservoir; i++)
-	{
-		mNames[i] = pNames[i];
-		mm[i] = 0;
-		mb[i] = 0;
-		mSumServed[i] = 0;
-	}
-}
-bool cReservoir::addReservoir(std::string pName)
-{
-	if (mNumberOfReservoir <= MAX_NUMBER_RESERVOIR) // Pruefen ob die Maximale Anzahl an Vorratsbehaelter bereits erreicht ist.
-	{
-		mNames[mNumberOfReservoir] = pName; // Name uebergeben
-		mm[mNumberOfReservoir] = 0; // Parameter auf 0 setzen (entspricht nicht initielisiert)
-		mb[mNumberOfReservoir] = 0; // Parameter auf 0 setzen (entspricht nicht initielisiert)
-		mSumServed[mNumberOfReservoir] = 0; // Summe der ausgeschenkten Maenge auf 0ml setzen
-		mNumberOfReservoir++; // Anzahl an verwendeten Vorratsbehaelter um eins erhoehen.
-		return true;
-	}
-	else
-	{
-		return false;
-	}	
-}
-bool cReservoir::addReservoir(std::string pName, double pm, double pb)
-{
-	if (mNumberOfReservoir <= MAX_NUMBER_RESERVOIR) // Pruefen ob die Maximale Anzahl an Vorratsbehaelter bereits erreicht ist.
-	{
-		mNames[mNumberOfReservoir] = pName; // Name uebergeben
-		mm[mNumberOfReservoir] = pm; // Parameter m festlegen
-		mb[mNumberOfReservoir] = pb; // Parameter b festlegen
-		mSumServed[mNumberOfReservoir] = 0; // Summe der ausgeschenkten Maenge auf 0ml setzen
-		mNumberOfReservoir++; // Anzahl an verwendeten Vorratsbehaelter um eins erhoehen.
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-void cReservoir::setParams(double pm[], double pb[])
-{
-	for (int i = 0; i < mNumberOfReservoir; i++)
-	{
-		mm[i] = pm[i]; 
-		mb[i] = pb[i];
-	}
-}
-void cReservoir::setMB(int pIndex, double pm, double pb)
-{
-	mm[pIndex] = pm;
-	mb[pIndex] = pb;
-}
-void cReservoir::addToSum(int pIndex, int pAmount)
-{
-	mSumServed[pIndex] = mSumServed[pIndex] + pAmount; // Gesamte ausgeschenkte Menge dieses Vorrates um die angegebene Maenge in ml (pAmount) erhoehen.
-}
-double cReservoir::getSum(int pIndex)
-{
-	return ((double)mSumServed[pIndex]) / 1000; // Gibt die gesamte ausgeschenkte Summe des Vorratsbehaelters (in L, daher division mit 1000) aus.
-}
-std::string cReservoir::getReservoirName(int pIndex)
-{
-	return mNames[pIndex];
-}
-int cReservoir::getReservoirIndex(std::string pName)
-{
-	for (int i = 0; i<mNumberOfReservoir; i++)
-	{
-		if(mNames[i] == pName) // Prueft, ob der Vorratsbehaelter an dieser Stelle den gesuchten Namen (pName) hat.
-		{
-			return i; // Falls dies der Fall ist, wird der Index dieses Vorratsbehaelters uebergeben.
-		}
-	}
-	return -1; // falls keine Uebereinstimmung gefunden wurde.
-}
-int cReservoir::getNumberOfReservoir()
-{
-	return mNumberOfReservoir;
-}
-int cReservoir::AmountToTime(int pIndex, int pml)
-{
-	double time = (double)pml * mm[pIndex] + mb[pIndex]
-	ESP_LOGD(LOG_TAG, "m=%f, b=%f, Time=%f", mm[pIndex], mb[pIndex], time);
-	return time; // Linearer Zusammenhang: Zeit (Einheit: ms) = Wunschmaenge (Einheit: ml) * Steigung (Einheit: ms / ml) + Offset (Einheit: ms); Wobei davon ausgegangen wird, dass ein Milliliter einem Gramm entsprincht.
+	id = pId;
+	mName = pName;
+	mm = pm;
+	mb = pb;
+	mSumServed = pSumServed;
 }
 
-bool cReservoir::getInitState(int pIndex)
+int SingleReservoir::getId()
 {
-	ESP_LOGD(LOG_TAG, "[%d] m=%f, b=%f, InitOk=%d", pIndex, mm[pIndex], mb[pIndex], ((mm[pIndex] != 0 || mb[pIndex] != 0)?"0":"1"));
-	return mm[pIndex] != 0 || mb[pIndex] != 0;
+	return id;
 }
-bool cReservoir::getInitStateAll()
+
+bool SingleReservoir::getInitState()
 {
-	for (int i = 0; i < mNumberOfReservoir; i++)
-	{
-		if(getInitState(i) == false)
-		{ // Falls ein Vorratsbehaelter gefunden wird, der noch nicht initialisiert ist.
-			return false; // Funktion verlassen und false zurueckgeben.
-		}
-	}
-	// Falls alle Vorratsbehaelter initialisiert sind
+	ESP_LOGD(LOG_TAG, "[%d] m=%f, b=%f, InitOk=xx", id, mm, mb);
+	return mm != 0 || mb != 0;
+}
+
+std::string SingleReservoir::getName()
+{
+	return mName;
+}
+
+void SingleReservoir::addToSum(int amount, bool reset) {
+	if(reset) mSumServed = 0;
+	mSumServed += amount;
+}
+
+int SingleReservoir::AmountToTime(double pml)
+{
+	double time = (double)pml * mm + mb;
+	ESP_LOGD(LOG_TAG, "m=%f, b=%f, Time=%f", mm, mb, time);
+	return time;
+	/* Linearer Zusammenhang:
+	Zeit (Einheit: ms) = Wunschmaenge (Einheit: ml) * Steigung (Einheit: ms / ml) + Offset (Einheit: ms);
+	Wobei davon ausgegangen wird, dass ein Milliliter einem Gramm entsprincht.
+	*/
+}
+
+
+cReservoir::cReservoir()
+{
+
+}
+
+bool cReservoir::addReservoir(int pIndex, SingleReservoir* reservoir)
+{
+	if(pIndex >= MAX_NUMBER_RESERVOIR) return false;
+	reservoirs[pIndex] = reservoir;
 	return true;
 }
-double cReservoir::getM(int pIndex)
+
+std::string cReservoir::getReservoirName(int pIndex)
 {
-	return mm[pIndex];
+	if(pIndex >= MAX_NUMBER_RESERVOIR) return "";
+	return reservoirs[pIndex]->getName();
 }
-double cReservoir::getB(int pIndex)
+
+int cReservoir::getReservoirIndex(std::string pName)
 {
-	return mb[pIndex];
+	for (uint8_t i = 0; i < MAX_NUMBER_RESERVOIR; i++) {
+		if(reservoirs[i] == NULL) continue;
+		ESP_LOGD("cReservoir", "Comparing Name %s against %s", reservoirs[i]->getName().c_str(), pName.c_str());
+		if(pName.compare(reservoirs[i]->getName()) == 0) {
+			return i;
+		}
+	}
+	return -1;
 }

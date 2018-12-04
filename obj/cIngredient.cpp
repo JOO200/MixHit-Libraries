@@ -1,14 +1,26 @@
 #include "cIngredient.h"
 
-cIngredient::cIngredient(std::string pName, int pPercent)
+cIngredient::cIngredient()
 {
-	mName = pName;
+	mIndex = 0;
+	mPercent = 0;
+}
+
+cIngredient::cIngredient(int pIndex, int pPercent)
+{
+	mIndex = pIndex;
 	mPercent = pPercent;
 }
 
+#if 0
 std::string cIngredient::getName()
 {
 	return mName;
+}
+#endif
+int cIngredient::getIndex()
+{
+	return mIndex;
 }
 
 int cIngredient::getPercent()

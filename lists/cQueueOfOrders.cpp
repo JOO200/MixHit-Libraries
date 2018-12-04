@@ -1,29 +1,23 @@
 #include "cQueueOfOrders.h"
+#include "esp_log.h"
 
-cQueueOfOrders::cQueueOfOrders()
-{
-	mNumberOfOrdersInQueue = 0;
-	mFirstIndex = 0;
-	mLastIndex = 0;
-	mMaxLenght = 0;
-}
 cQueueOfOrders::cQueueOfOrders(int pNumberOf)
 {
 	mNumberOfOrdersInQueue = 0;
 	mFirstIndex = 0;
 	mLastIndex = 0;
 	mMaxLenght = pNumberOf;
-	mQueue = new cOrder[mMaxLenght];
+	mQueue = NULL; //new cOrder[mMaxLenght];
 }
 bool cQueueOfOrders::getOrder(cOrder *pOrder)
 {
 	if(mNumberOfOrdersInQueue > 0)
 	{
-		DettacheInterrupts(); // Verhindern, dass waehrendessen Interrupts stattfinden
+//		DettacheInterrupts(); // Verhindern, dass waehrendessen Interrupts stattfinden
 		*pOrder = mQueue[mFirstIndex]; // Cocktail aus der Liste uebergeben
 		mFirstIndex = (mFirstIndex + 1)%mMaxLenght; // mFirstIndex um eins erhoehen (Falls mFirstIndex >= mMaxLenght -> mFirstIndex = 0)
 		mNumberOfOrdersInQueue--; // Anzahl an Bestellungen in der Liste um eins veringern.
-		AttacheInterrupts(); // Interrupts wieder aktivieren
+//		AttacheInterrupts(); // Interrupts wieder aktivieren
 		return true;
 	}
 	else
@@ -65,12 +59,13 @@ int cQueueOfOrders::getNumberOfOrders()
 }
 int cQueueOfOrders::getPlaceOfOrderNumber(int pOrderNumber)
 {
-	Serial.print("mFirstIndex: " + String(mFirstIndex) + "AnzahlInQueue " + String(getNumberOfOrders()));
+	ESP_LOGI("Queue", "mFirstIndex: %d, AnzahlInQueue: %d",
+			mFirstIndex, getNumberOfOrders());
 	int lIndex;
 	for (int i = mFirstIndex; i < mFirstIndex + getNumberOfOrders(); i++)
 	{
 		lIndex = i%mMaxLenght; // Da der mFirstIndex groeser als der mLastIndex sein kann und der Index in einen Sprung vom letzten Index auf 0 macht.
-		Serial.println("lIndex: " + String(lIndex));
+		ESP_LOGI("Queue", "lIndex: %d", lIndex);
 		if (mQueue[lIndex].getOrderNumber() == pOrderNumber)
 		{ // Falls die ite Bestellung in der Liste die angegebene Bestellnummer besitzt.
 			return i - mFirstIndex; // Hier wird der Platz der Bestellung in der Warteschlange zurueckgegeben.

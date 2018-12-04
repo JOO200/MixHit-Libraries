@@ -1,11 +1,14 @@
 #ifndef _CGLAESER_H_
 #define _CGLAESER_H_
-#include "../Configuration.h"
-#include "../../libs/MyString.h"
-#include "../obj/cGlass.h"
+#include "cGlass.h"
+#include <vector>
 
 #define ERROR_checkGlasses_KeinGlas -1
 #define ERROR_checkGlasses_UnpassendeGlasses -2
+
+#define MAX_DIFFERENT_GLASSES 1
+#define WEIGHT_EMPTY_SCALE 10
+#define GLASS_TOLERANCE 30
 
 class cGlasses
 {
@@ -20,10 +23,10 @@ public:
 	void setBigAmount(int pBigAmount);
 	void setSmallAmount(int pSmallAmount);
 private:
-	int mMaxNumberOfGlasses;			// Maximale anzahl an erlaubten verschiedenen Glaesern
+//	int mMaxNumberOfGlasses;			// Maximale anzahl an erlaubten verschiedenen Glaesern DEFINED
 	int mBigAmount;						// Fuellmenge eines grossen Glases
 	int mSmallAmount;					// Fuelmenge eines kleinen Glases
-	vector<cGlass> mGlasses;			// Liste an bekannten Glaeser.
+	std::vector<cGlass> mGlasses;		// Liste an bekannten Glaeser.
 };
 
 #endif

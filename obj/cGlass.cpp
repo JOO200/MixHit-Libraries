@@ -1,5 +1,4 @@
 #include "cGlass.h"
-#include "../cCocktailMixer.h"
 
 cGlass::cGlass(int pTare, int pTolerance)
 {

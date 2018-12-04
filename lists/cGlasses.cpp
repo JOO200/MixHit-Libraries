@@ -1,15 +1,19 @@
 #include "cGlasses.h"
+#include "esp_log.h"
+
 
 cGlasses::cGlasses()
 {
-
+	mSmallAmount = 0;
+	mBigAmount = 0;
 }
+
 int cGlasses::checkGlasses(int pWeight) // Wenn mehr als eine Sorte Glaeser verwendet werden sollen, wird hier zum unterscheiden noch eine weitere Messgroese benoetigt.
 {
-	Serial.println("CheckGlasses" + String(pWeight));
+	ESP_LOGI("Glasses", "Check Glasses %d", pWeight);
 	for (int i = 0; i<mGlasses.size(); i++)
 	{
-		if (pWeight <= WeightEmptyScale)
+		if (pWeight <= WEIGHT_EMPTY_SCALE)
 		{
 			return ERROR_checkGlasses_KeinGlas;
 		}
@@ -28,7 +32,7 @@ cGlass cGlasses::getGlas(int pIndex)
 }
 bool cGlasses::addGlas(cGlass* pGlas)
 {
-	if (mGlasses.size() < MaxNumberOfDifferentGlasses)
+	if (mGlasses.size() < MAX_DIFFERENT_GLASSES)
 	{
 		mGlasses.push_back(*pGlas);
 		return true;
