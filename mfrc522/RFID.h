@@ -3,7 +3,7 @@
 
 //#include "../mixer/Configuration.h"
 //#include "I2C.h"
-#include "MFRC522.h"
+#include <MFRC522I2C.h>
 #include <stdint.h>
 
 #define THRESHOLD_BIG_SMALL_COCKTAIL 200		// Threshold for cocktail size: over -> big cocktail, under -> small cocktail;
@@ -20,12 +20,12 @@ struct RfidData
 };
 
 
-class RFID: public MFRC522
+class RFID: public MFRC522_I2C
 {
 public:
 
 	//using MFRC522::MFRC522;
-	RFID(uint8_t chipAddress, uint8_t resetPowerDownPin) : MFRC522(chipAddress,resetPowerDownPin) {};
+	RFID(uint8_t chipAddress, uint8_t resetPowerDownPin) : MFRC522_I2C(chipAddress,resetPowerDownPin) {};
 	bool tagAvailable();			
 	bool writeData(RfidData data, MIFARE_Key *stdKey);
 	bool readData(RfidData &data, MIFARE_Key *stdKey);
